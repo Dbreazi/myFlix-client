@@ -87,3 +87,5 @@ export const MainView = () => {
     </div>
   );
 };
+
+//Nullified code// 
