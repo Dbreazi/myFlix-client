@@ -16,7 +16,7 @@ export const SignupView = () => {
       Birthday: birthday
     };
 
-    fetch("https://strobeapp-583fefccfb94.herokuapp.com/signup", {  // Update with your actual signup URL
+    fetch("https://strobeapp-583fefccfb94.herokuapp.com/users/", {  // Updated API URL
       method: "POST",
       body: JSON.stringify(data),
       headers: {
