@@ -77,3 +77,5 @@ export const SignupView = () => {
     </form>
   );
 };
+
+//Nullified code// 
