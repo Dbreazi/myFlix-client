@@ -1,9 +1,9 @@
-$color: steelblue;
+@import '~bootstrap/scss/bootstrap.scss';
 
-.my-flix {
-  color: $color;
-}
-
-img {
-  width: 300px; 
-}
+.my-flix-title {
+    font-size: 3rem; 
+    font-weight: bold;
+    color: #333; 
+    margin-bottom: 2rem; 
+  }
+  

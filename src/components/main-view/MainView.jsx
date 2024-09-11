@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import { MovieCard } from "../movie-card/MovieCard";
 import { MovieView } from "../movie-view/MovieView";
 import { LoginView } from "../login-view/LoginView";
-import { SignupView } from "../signup-view/SignupView";  // Import SignupView
+import { SignupView } from "../signup-view/SignupView";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -36,29 +37,45 @@ export const MainView = () => {
 
   if (!user) {
     return (
-      <>
-        <LoginView onLoggedIn={(user, token) => {
-          setUser(user);
-          setToken(token);
-        }} />
-        or
-        <SignupView />
-      </>
+      <Container>
+        <Row className="justify-content-center mt-4">
+          <Col xs={12} className="text-center">
+            <h1 className="my-flix-title">My-Flix</h1>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col md={6} lg={4}>
+            <LoginView onLoggedIn={(user, token) => {
+              setUser(user);
+              setToken(token);
+            }} />
+            <div className="text-center mt-4">or</div>
+            <SignupView />
+          </Col>
+        </Row>
+      </Container>
     );
   }
 
   if (selectedMovie) {
     return (
-      <>
-        <button onClick={() => {
-          setUser(null);
-          setToken(null);
-          localStorage.clear();
-        }}>
-          Logout
-        </button>
+      <Container>
+        <Row className="mb-4">
+          <Col className="d-flex justify-content-end">
+            <Button
+              variant="primary"
+              onClick={() => {
+                setUser(null);
+                setToken(null);
+                localStorage.clear();
+              }}
+            >
+              Logout
+            </Button>
+          </Col>
+        </Row>
         <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
-      </>
+      </Container>
     );
   }
 
@@ -67,25 +84,33 @@ export const MainView = () => {
   }
 
   return (
-    <div>
-      <button onClick={() => {
-        setUser(null);
-        setToken(null);
-        localStorage.clear();
-      }}>
-        Logout
-      </button>
-      {movies.map((movie) => (
-        <MovieCard
-          key={movie._id}
-          movie={movie}
-          onMovieClick={(newSelectedMovie) => {
-            setSelectedMovie(newSelectedMovie);
-          }}
-        />
-      ))}
-    </div>
+    <Container>
+      <Row className="mb-4">
+        <Col className="d-flex justify-content-end">
+          <Button
+            variant="primary"
+            onClick={() => {
+              setUser(null);
+              setToken(null);
+              localStorage.clear();
+            }}
+          >
+            Logout
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        {movies.map((movie) => (
+          <Col md={4} lg={3} key={movie._id} className="mb-4">
+            <MovieCard
+              movie={movie}
+              onMovieClick={(newSelectedMovie) => {
+                setSelectedMovie(newSelectedMovie);
+              }}
+            />
+          </Col>
+        ))}
+      </Row>
+    </Container>
   );
 };
-
-//Nullified code// 

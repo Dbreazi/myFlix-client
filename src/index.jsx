@@ -1,10 +1,15 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { MainView } from "./components/main-view/MainView";
-import "./index.scss";
+import "./index.scss";  
+import { Container } from "react-bootstrap"; 
 
 const App = () => {
-  return <MainView />;
+  return (
+    <Container className="my-5"> 
+      <MainView />  
+    </Container>
+  );
 };
 
 const container = document.querySelector("#root");
