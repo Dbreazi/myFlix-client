@@ -4,16 +4,18 @@ import PropTypes from "prop-types";
 export const MovieCard = ({ movie, onMovieClick }) => {
   return (
     <div
-      onClick={() => {
-        onMovieClick(movie);
-      }}
+      onClick={() => onMovieClick(movie)}
+      className="movie-card" 
     >
-      <img src={movie.ImagePath} alt={movie.Title} />
+      <img
+        src={movie.ImagePath}
+        alt={movie.Title}
+        className="w-100" 
+      />
       <h3>{movie.Title}</h3>
     </div>
   );
 };
-
 
 MovieCard.propTypes = {
   movie: PropTypes.shape({
