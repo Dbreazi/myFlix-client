@@ -5,6 +5,7 @@ import { MovieView } from "../movie-view/MovieView";
 import { LoginView } from "../login-view/LoginView";
 import { SignupView } from "../signup-view/SignupView";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { NavigationBar } from "../navigation-bar/NavigationBar";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -38,6 +39,14 @@ export const MainView = () => {
   return (
     <BrowserRouter>
       <Container>
+        <NavigationBar 
+          user={user} 
+          onLoggedOut={() => {
+            setUser(null);
+            setToken(null);
+            localStorage.clear();
+          }} 
+        />
         <Routes>
           <Route
             path="/login"
