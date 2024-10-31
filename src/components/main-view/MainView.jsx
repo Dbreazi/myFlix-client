@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { MovieCard } from "../movie-card/MovieCard";
 import { MovieView } from "../movie-view/MovieView";
 import { LoginView } from "../login-view/LoginView";
 import { SignupView } from "../signup-view/SignupView";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { NavigationBar } from "../navigation-bar/NavigationBar";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -11,7 +13,6 @@ export const MainView = () => {
   const [user, setUser] = useState(storedUser || null);
   const [token, setToken] = useState(storedToken || null);
   const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
     if (!token) return;
@@ -35,82 +36,58 @@ export const MainView = () => {
       .catch((error) => console.error('Error fetching movies:', error));
   }, [token]);
 
-  if (!user) {
-    return (
-      <Container>
-        <Row className="justify-content-center mt-4">
-          <Col xs={12} className="text-center">
-            <h1 className="my-flix-title">My-Flix</h1>
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col md={6} lg={4}>
-            <LoginView onLoggedIn={(user, token) => {
-              setUser(user);
-              setToken(token);
-            }} />
-            <div className="text-center mt-4">or</div>
-            <SignupView />
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
-
-  if (selectedMovie) {
-    return (
-      <Container>
-        <Row className="mb-4">
-          <Col className="d-flex justify-content-end">
-            <Button
-              variant="primary"
-              onClick={() => {
-                setUser(null);
-                setToken(null);
-                localStorage.clear();
-              }}
-            >
-              Logout
-            </Button>
-          </Col>
-        </Row>
-        <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
-      </Container>
-    );
-  }
-
-  if (movies.length === 0) {
-    return <div>The list is empty!</div>;
-  }
-
   return (
-    <Container>
-      <Row className="mb-4">
-        <Col className="d-flex justify-content-end">
-          <Button
-            variant="primary"
-            onClick={() => {
-              setUser(null);
-              setToken(null);
-              localStorage.clear();
-            }}
-          >
-            Logout
-          </Button>
-        </Col>
-      </Row>
-      <Row>
-        {movies.map((movie) => (
-          <Col md={4} lg={3} key={movie._id} className="mb-4">
-            <MovieCard
-              movie={movie}
-              onMovieClick={(newSelectedMovie) => {
-                setSelectedMovie(newSelectedMovie);
-              }}
-            />
-          </Col>
-        ))}
-      </Row>
-    </Container>
+    <BrowserRouter>
+      <Container>
+        <NavigationBar 
+          user={user} 
+          onLoggedOut={() => {
+            setUser(null);
+            setToken(null);
+            localStorage.clear();
+          }} 
+        />
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              <LoginView
+                onLoggedIn={(user, token) => {
+                  setUser(user);
+                  setToken(token);
+                }}
+              />
+            }
+          />
+          <Route path="/signup" element={<SignupView />} />
+          <Route
+            path="/"
+            element={
+              !user ? (
+                <Navigate to="/login" />
+              ) : (
+                <Row>
+                  {movies.length === 0 ? (
+                    <div>The list is empty!</div>
+                  ) : (
+                    movies.map((movie) => (
+                      <Col md={4} lg={3} key={movie._id} className="mb-4">
+                        <MovieCard movie={movie} />
+                      </Col>
+                    ))
+                  )}
+                </Row>
+              )
+            }
+          />
+          <Route
+            path="/movies/:movieId"
+            element={
+              !user ? <Navigate to="/login" /> : <MovieView movies={movies} />
+            }
+          />
+        </Routes>
+      </Container>
+    </BrowserRouter>
   );
 };

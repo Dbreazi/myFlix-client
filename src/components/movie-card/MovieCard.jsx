@@ -1,19 +1,15 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
-export const MovieCard = ({ movie, onMovieClick }) => {
+export const MovieCard = ({ movie }) => {
   return (
-    <div
-      onClick={() => onMovieClick(movie)}
-      className="movie-card" 
-    >
-      <img
-        src={movie.ImagePath}
-        alt={movie.Title}
-        className="w-100" 
-      />
-      <h3>{movie.Title}</h3>
-    </div>
+    <Link to={`/movies/${movie._id}`}>
+      <div className="movie-card">
+        <img src={movie.ImagePath} alt={movie.Title} className="w-100" />
+        <h3>{movie.Title}</h3>
+      </div>
+    </Link>
   );
 };
 
@@ -33,6 +29,5 @@ MovieCard.propTypes = {
     }).isRequired,
     ImagePath: PropTypes.string.isRequired,
     Featured: PropTypes.bool.isRequired
-  }).isRequired,
-  onMovieClick: PropTypes.func.isRequired
+  }).isRequired
 };
