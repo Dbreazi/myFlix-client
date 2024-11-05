@@ -1,3 +1,171 @@
+.movie-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.movie-card-wrapper .movie-card {
+  align-items: left;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  transition: transform .2s ease-in-out;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 4px 8px #0000001a;
+}
+
+.movie-card-wrapper .movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-card-wrapper .movie-image {
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  height: auto;
+}
+
+.movie-card-wrapper .movie-title {
+  text-align: left;
+  color: #000;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 8px;
+  padding: 0 8px;
+  font-size: 1rem;
+  overflow: hidden;
+}
+
+.favourite-movies-wrapper .favourite-movies {
+  background-color: #fff;
+  border: none;
+  border-radius: 8px;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+}
+
+.favourite-movies-wrapper .movies-scroll {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-bottom: 1rem;
+  display: grid;
+  overflow-y: auto;
+}
+
+.favourite-movies-wrapper .movie-item {
+  align-items: left;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  flex-direction: column;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.favourite-movies-wrapper .movie-item a {
+  color: inherit;
+  flex-direction: column;
+  width: 100%;
+  text-decoration: none;
+  display: flex;
+}
+
+.favourite-movies-wrapper .movie-image {
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  width: 100%;
+  height: auto;
+}
+
+.favourite-movies-wrapper .movie-title {
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 8px;
+  font-size: 1rem;
+  overflow: hidden;
+}
+
+.favourite-movies-wrapper .remove-button {
+  color: #d9534f;
+  cursor: pointer;
+  background-color: #fff;
+  border: none;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 1.2rem;
+  display: flex;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.profile-outer-container {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.profile-inner-card {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: none !important;
+  background-color: #fff !important;
+  border: none !important;
+}
+
+.favorite-movies-container {
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0;
+  display: flex;
+  background: none !important;
+  border: none !important;
+}
+
+.favourite-movies {
+  flex-grow: 1;
+  padding-top: 1rem;
+}
+
+.profile-inner-card.delete-account-card .card-body {
+  padding: 1.25rem;
+}
+
+.profile-button {
+  box-sizing: border-box;
+  border-radius: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 10px 20px;
+  font-size: 1rem;
+}
+
+.favourite-movies-title {
+  text-align: left;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.main-view-container {
+  margin-top: 20px;
+  padding: 20px;
+}
+
 :root, [data-bs-theme="light"] {
   --bs-blue: #0d6efd;
   --bs-indigo: #6610f2;

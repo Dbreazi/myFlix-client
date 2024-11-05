@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 
 export const NavigationBar = ({ user, onLoggedOut }) => {
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="lg" className="mb-4"> {/* Add 'mb-4' for bottom margin */}
       <Container>
         <Navbar.Brand as={Link} to="/">
           MyFlix
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
+          <Nav className="ms-auto">
             {user ? (
               <>
                 <Nav.Link as={Link} to="/">Home</Nav.Link>

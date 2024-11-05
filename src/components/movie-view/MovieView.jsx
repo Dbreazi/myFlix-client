@@ -1,63 +1,80 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Button } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 
-export const MovieView = ({ movies }) => {
-  const { movieId } = useParams(); // Get movieId from URL parameters
-
-  // Find the movie with the matching ID
+export const MovieView = ({ movies, user, token }) => {
+  const { movieId } = useParams();
   const movie = movies.find((m) => m._id === movieId);
 
-  // Return early if no movie is found (optional handling for missing movies)
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    // Check if the movie is already in the user's favorite list
+    if (user.FavoriteMovies && user.FavoriteMovies.includes(movieId)) {
+      setIsFavorite(true);
+    }
+  }, [user.FavoriteMovies, movieId]);
+
+  const addFavorite = () => {
+    fetch(`https://strobeapp-583fefccfb94.herokuapp.com/users/${user.Username}/movies/${movieId}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to add favorite");
+        return response.json();
+      })
+      .then(() => {
+        setIsFavorite(true); // Update the state to reflect that it's now a favorite
+      })
+      .catch((error) => console.error("Error adding favorite:", error));
+  };
+
   if (!movie) return <div>Movie not found</div>;
 
   return (
     <div className="d-flex justify-content-center p-3"> 
-      <div style={{ maxWidth: '500px', width: '100%' }}>  
-        
-        <div className="mb-4 text-center">  
+      <div style={{ maxWidth: '800px', width: '100%' }} className="d-flex"> 
+        <div className="me-5"> 
           <img
             className="img-fluid"
             src={movie.ImagePath}
             alt={movie.Title}
-            style={{ maxWidth: '500px', height: 'auto' }}
+            style={{ maxWidth: '400px', height: 'auto' }}
           />
         </div>
 
-        <div className="mb-3">
-          <span className="fw-bold">Title: </span>
-          <span>{movie.Title}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Description: </span>
-          <span>{movie.Description}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Genre: </span>
-          <span>{movie.Genre.Name}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Director: </span>
-          <span>{movie.Director.Name}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Bio: </span>
-          <span>{movie.Director.Bio}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Birth: </span>
-          <span>{movie.Director.Birth}</span>
-        </div>
-        <div className="mb-4">
-          <span className="fw-bold">Death: </span>
-          <span>{movie.Director.Death}</span>
-        </div>
+        <div className="flex-grow-1 d-flex flex-column">
+          {[
+            { label: 'Title', value: movie.Title },
+            { label: 'Description', value: movie.Description },
+            { label: 'Genre', value: movie.Genre.Name },
+            { label: 'Director', value: movie.Director.Name },
+            { label: 'Bio', value: movie.Director.Bio },
+            { label: 'Birth', value: movie.Director.Birth },
+            { label: 'Death', value: movie.Director.Death },
+          ].map((info, index) => (
+            <div className="mb-3" key={index}>
+              <span className="fw-bold">{info.label}: </span>
+              <span>{info.value}</span>
+              {info.label === 'Genre' && <hr className="my-2" />}
+            </div>
+          ))}
 
-        <div className="d-flex justify-content-center">
-          <Link to="/">
-            <Button variant="primary">Back</Button>
-          </Link>
+          <div className="mt-auto d-flex justify-content-between"> 
+            <Button
+              variant={isFavorite ? "secondary" : "primary"}
+              onClick={isFavorite ? null : addFavorite} // Disable if already a favorite
+              disabled={isFavorite}
+              className="w-100 me-2"
+            >
+              {isFavorite ? "Added to Favorites" : "Add to Favorites"}
+            </Button>
+            <Link to="/">
+              <Button variant="primary" className="w-100">Back</Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -82,5 +99,7 @@ MovieView.propTypes = {
       ImagePath: PropTypes.string.isRequired,
       Featured: PropTypes.bool.isRequired
     })
-  ).isRequired
+  ).isRequired,
+  user: PropTypes.object.isRequired,
+  token: PropTypes.string.isRequired
 };

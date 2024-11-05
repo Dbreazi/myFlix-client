@@ -1,17 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import "./MovieCard.scss";
 
-export const MovieCard = ({ movie }) => {
-  return (
-    <Link to={`/movies/${movie._id}`}>
+export const MovieCard = ({ movie }) => (
+  <Link to={`/movies/${movie._id}`} className="movie-card-link">
+    <div className="movie-card-wrapper">
       <div className="movie-card">
-        <img src={movie.ImagePath} alt={movie.Title} className="w-100" />
-        <h3>{movie.Title}</h3>
+        <img src={movie.ImagePath} alt={movie.Title} className="movie-image" />
+        <div className="movie-title">{movie.Title}</div>
       </div>
-    </Link>
-  );
-};
+    </div>
+  </Link>
+);
 
 MovieCard.propTypes = {
   movie: PropTypes.shape({
@@ -31,3 +32,5 @@ MovieCard.propTypes = {
     Featured: PropTypes.bool.isRequired
   }).isRequired
 };
+
+export default MovieCard;

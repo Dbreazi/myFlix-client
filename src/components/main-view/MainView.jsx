@@ -4,14 +4,14 @@ import { MovieCard } from "../movie-card/MovieCard";
 import { MovieView } from "../movie-view/MovieView";
 import { LoginView } from "../login-view/LoginView";
 import { SignupView } from "../signup-view/SignupView";
+import ProfileView from "../profile-view/ProfileView";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { NavigationBar } from "../navigation-bar/NavigationBar";
+import "./MainView.scss";
 
 export const MainView = () => {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const storedToken = localStorage.getItem("token");
-  const [user, setUser] = useState(storedUser || null);
-  const [token, setToken] = useState(storedToken || null);
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")) || null);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
@@ -20,44 +20,32 @@ export const MainView = () => {
     fetch("https://strobeapp-583fefccfb94.herokuapp.com/movies", {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then((response) => response.json())
-      .then((data) => {
-        const moviesFromApi = data.map((movie) => ({
-          _id: movie._id,
-          Title: movie.Title,
-          Description: movie.Description,
-          Genre: movie.Genre,
-          Director: movie.Director,
-          ImagePath: movie.ImagePath,
-          Featured: movie.Featured,
-        }));
-        setMovies(moviesFromApi);
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch movies");
+        return response.json();
       })
-      .catch((error) => console.error('Error fetching movies:', error));
+      .then((data) => {
+        setMovies(data.map(({ _id, Title, Description, Genre, Director, ImagePath, Featured }) => ({
+          _id, Title, Description, Genre, Director, ImagePath, Featured
+        })));
+      })
+      .catch((error) => console.error("Error fetching movies:", error));
   }, [token]);
+
+  const handleLogout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.clear();
+  };
 
   return (
     <BrowserRouter>
       <Container>
-        <NavigationBar 
-          user={user} 
-          onLoggedOut={() => {
-            setUser(null);
-            setToken(null);
-            localStorage.clear();
-          }} 
-        />
+        <NavigationBar user={user} onLoggedOut={handleLogout} />
         <Routes>
           <Route
             path="/login"
-            element={
-              <LoginView
-                onLoggedIn={(user, token) => {
-                  setUser(user);
-                  setToken(token);
-                }}
-              />
-            }
+            element={<LoginView onLoggedIn={(user, token) => { setUser(user); setToken(token); }} />}
           />
           <Route path="/signup" element={<SignupView />} />
           <Route
@@ -66,25 +54,29 @@ export const MainView = () => {
               !user ? (
                 <Navigate to="/login" />
               ) : (
-                <Row>
-                  {movies.length === 0 ? (
-                    <div>The list is empty!</div>
-                  ) : (
-                    movies.map((movie) => (
-                      <Col md={4} lg={3} key={movie._id} className="mb-4">
-                        <MovieCard movie={movie} />
-                      </Col>
-                    ))
-                  )}
-                </Row>
+                <div className="main-view-container">
+                  <Row>
+                    {movies.length === 0 ? (
+                      <div>The list is empty!</div>
+                    ) : (
+                      movies.map((movie) => (
+                        <Col md={4} lg={3} key={movie._id} className="mb-4">
+                          <MovieCard movie={movie} />
+                        </Col>
+                      ))
+                    )}
+                  </Row>
+                </div>
               )
             }
           />
           <Route
             path="/movies/:movieId"
-            element={
-              !user ? <Navigate to="/login" /> : <MovieView movies={movies} />
-            }
+            element={!user ? <Navigate to="/login" /> : <MovieView movies={movies} user={user} token={token} />}
+          />
+          <Route
+            path="/profile"
+            element={!user ? <Navigate to="/login" /> : <ProfileView user={user} movies={movies} onLoggedOut={handleLogout} />}
           />
         </Routes>
       </Container>
