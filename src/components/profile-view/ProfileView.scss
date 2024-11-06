@@ -1,0 +1,50 @@
+.profile-outer-container {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.profile-inner-card {
+  background-color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 8px;
+  margin-bottom: 1rem; /* Space between cards for cleaner layout */
+}
+
+.favorite-movies-container {
+  background: none !important;
+  border: none !important;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.favourite-movies {
+  flex-grow: 1;
+  padding-top: 1rem;
+}
+
+/* Delete Account Button Styling */
+.profile-inner-card.delete-account-card .card-body {
+  padding: 1.25rem;
+}
+
+.profile-button {
+  width: 100%;
+  padding: 10px 20px; /* Ensures uniform padding */
+  font-size: 1rem;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.favourite-movies-title {
+  font-size: 1.5rem; /* Match this with the Favourite Movies title */
+  font-weight: bold; /* Match this with the Favourite Movies title */
+  text-align: left; /* Ensure it is left-aligned */
+  margin: 0; /* Remove any margin if necessary */
+}
+

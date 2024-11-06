@@ -1,65 +1,101 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Button } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { Button, Col, Row } from "react-bootstrap";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
-export const MovieView = ({ movies }) => {
-  const { movieId } = useParams(); // Get movieId from URL parameters
-
-  // Find the movie with the matching ID
+export const MovieView = ({ movies, user, token, onFavoriteToggle }) => {
+  const { movieId } = useParams();
+  const navigate = useNavigate();
   const movie = movies.find((m) => m._id === movieId);
 
-  // Return early if no movie is found (optional handling for missing movies)
+  const [isFavorite, setIsFavorite] = useState(
+    user.FavoriteMovies?.includes(movieId)
+  );
+
+  const addFavorite = () => {
+    fetch(`https://strobeapp-583fefccfb94.herokuapp.com/users/${user.Username}/movies/${movieId}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to add favorite");
+        return response.json();
+      })
+      .then(() => {
+        setIsFavorite(true);
+        onFavoriteToggle(movieId, true); 
+      })
+      .catch((error) => console.error("Error adding favorite:", error));
+  };
+
+  const removeFavorite = () => {
+    fetch(`https://strobeapp-583fefccfb94.herokuapp.com/users/${user.Username}/movies/${movieId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to remove favorite");
+        return response.json();
+      })
+      .then(() => {
+        setIsFavorite(false);
+        onFavoriteToggle(movieId, false); 
+      })
+      .catch((error) => console.error("Error removing favorite:", error));
+  };
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   if (!movie) return <div>Movie not found</div>;
 
   return (
-    <div className="d-flex justify-content-center p-3"> 
-      <div style={{ maxWidth: '500px', width: '100%' }}>  
-        
-        <div className="mb-4 text-center">  
+    <div className="d-flex justify-content-center" style={{ marginTop: '6rem' }}>
+      <Row className="w-100" style={{ maxWidth: '800px' }}>
+        <Col xs={12} md={5} className="text-center mb-3 mb-md-0" style={{ paddingRight: '1.5rem' }}>
           <img
             className="img-fluid"
             src={movie.ImagePath}
             alt={movie.Title}
-            style={{ maxWidth: '500px', height: 'auto' }}
+            style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }}
           />
-        </div>
+        </Col>
+        
+        <Col xs={12} md={7} className="d-flex flex-column">
+          <div>
+            {[
+              { label: 'Title', value: movie.Title },
+              { label: 'Description', value: movie.Description },
+              { label: 'Genre', value: movie.Genre.Name },
+              { label: 'Director', value: movie.Director.Name },
+              { label: 'Bio', value: movie.Director.Bio },
+              { label: 'Birth', value: movie.Director.Birth },
+              { label: 'Death', value: movie.Director.Death },
+            ].map((info, index) => (
+              <div className="mb-3" key={index}>
+                <span className="fw-bold">{info.label}: </span>
+                <span>{info.value}</span>
+                {info.label === 'Genre' && <hr className="my-2" />}
+              </div>
+            ))}
+          </div>
 
-        <div className="mb-3">
-          <span className="fw-bold">Title: </span>
-          <span>{movie.Title}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Description: </span>
-          <span>{movie.Description}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Genre: </span>
-          <span>{movie.Genre.Name}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Director: </span>
-          <span>{movie.Director.Name}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Bio: </span>
-          <span>{movie.Director.Bio}</span>
-        </div>
-        <div className="mb-3">
-          <span className="fw-bold">Birth: </span>
-          <span>{movie.Director.Birth}</span>
-        </div>
-        <div className="mb-4">
-          <span className="fw-bold">Death: </span>
-          <span>{movie.Director.Death}</span>
-        </div>
-
-        <div className="d-flex justify-content-center">
-          <Link to="/">
-            <Button variant="primary">Back</Button>
-          </Link>
-        </div>
-      </div>
+          <div className="mt-auto d-flex flex-column flex-md-row gap-2"> 
+            <Button
+              variant={isFavorite ? "secondary" : "primary"}
+              onClick={isFavorite ? removeFavorite : addFavorite}
+              className="w-100"
+              style={{ minWidth: '160px', whiteSpace: 'nowrap' }}
+            >
+              {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+            </Button>
+            <Button variant="primary" className="w-100" onClick={handleBack}>
+              View All Movies
+            </Button>
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -82,5 +118,8 @@ MovieView.propTypes = {
       ImagePath: PropTypes.string.isRequired,
       Featured: PropTypes.bool.isRequired
     })
-  ).isRequired
+  ).isRequired,
+  user: PropTypes.object.isRequired,
+  token: PropTypes.string.isRequired,
+  onFavoriteToggle: PropTypes.func.isRequired
 };
