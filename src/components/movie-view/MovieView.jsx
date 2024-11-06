@@ -91,7 +91,7 @@ export const MovieView = ({ movies, user, token, onFavoriteToggle }) => {
               {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
             </Button>
             <Button variant="primary" className="w-100" onClick={handleBack}>
-              View All Movies
+              Back
             </Button>
           </div>
         </Col>
