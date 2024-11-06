@@ -20,15 +20,8 @@ export const MainView = () => {
     fetch("https://strobeapp-583fefccfb94.herokuapp.com/movies", {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to fetch movies");
-        return response.json();
-      })
-      .then((data) => {
-        setMovies(data.map(({ _id, Title, Description, Genre, Director, ImagePath, Featured }) => ({
-          _id, Title, Description, Genre, Director, ImagePath, Featured
-        })));
-      })
+      .then((response) => response.json())
+      .then((data) => setMovies(data))
       .catch((error) => console.error("Error fetching movies:", error));
   }, [token]);
 
@@ -36,6 +29,17 @@ export const MainView = () => {
     setUser(null);
     setToken(null);
     localStorage.clear();
+  };
+
+  const updateUserFavorites = (movieId, isAdding) => {
+    setUser((prevUser) => {
+      const updatedFavorites = isAdding
+        ? [...prevUser.FavoriteMovies, movieId]
+        : prevUser.FavoriteMovies.filter((id) => id !== movieId);
+      const updatedUser = { ...prevUser, FavoriteMovies: updatedFavorites };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
   };
 
   return (
@@ -51,9 +55,7 @@ export const MainView = () => {
           <Route
             path="/"
             element={
-              !user ? (
-                <Navigate to="/login" />
-              ) : (
+              user ? (
                 <div className="main-view-container">
                   <Row>
                     {movies.length === 0 ? (
@@ -67,16 +69,39 @@ export const MainView = () => {
                     )}
                   </Row>
                 </div>
+              ) : (
+                <Navigate to="/login" />
               )
             }
           />
           <Route
             path="/movies/:movieId"
-            element={!user ? <Navigate to="/login" /> : <MovieView movies={movies} user={user} token={token} />}
+            element={
+              user ? (
+                <MovieView 
+                  movies={movies} 
+                  user={user} 
+                  token={token} 
+                  onFavoriteToggle={updateUserFavorites}
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
           />
           <Route
             path="/profile"
-            element={!user ? <Navigate to="/login" /> : <ProfileView user={user} movies={movies} onLoggedOut={handleLogout} />}
+            element={
+              user ? (
+                <ProfileView 
+                  user={user} 
+                  movies={movies} 
+                  onLoggedOut={handleLogout} 
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
           />
         </Routes>
       </Container>

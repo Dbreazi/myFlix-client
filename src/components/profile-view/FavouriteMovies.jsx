@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FaTrashAlt } from 'react-icons/fa';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link } from 'react-router-dom';
 import './FavouriteMovies.scss';
 
 const FavouriteMovies = ({ movies, favoriteMovieIds, user, token, onFavoriteRemoved }) => {
@@ -21,12 +21,10 @@ const FavouriteMovies = ({ movies, favoriteMovieIds, user, token, onFavoriteRemo
         return response.json();
       })
       .then(() => {
-        console.log("Favorite removed:", movieId);
-        onFavoriteRemoved(movieId); // Remove from list without alert
+        onFavoriteRemoved(movieId);
       })
       .catch((error) => {
         console.error("Error removing favorite:", error);
-        // Optionally, add an error indicator without an alert
       });
   };
 
@@ -34,11 +32,10 @@ const FavouriteMovies = ({ movies, favoriteMovieIds, user, token, onFavoriteRemo
     <div className="favourite-movies-wrapper">
       <div className="favourite-movies">
         <h3>Favourite Movies</h3>
-        <hr /> {/* Separator line */}
+        <hr />
         <div className="movies-scroll">
           {favoriteMovies.map(movie => (
             <figure key={movie._id} className="movie-item">
-              {/* Wrap the image in a Link component */}
               <Link to={`/movies/${movie._id}`}>
                 <img src={movie.ImagePath} alt={movie.Title} className="movie-image" />
               </Link>

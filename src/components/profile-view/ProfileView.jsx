@@ -67,7 +67,6 @@ const ProfileView = ({ user, movies, onLoggedOut }) => {
         <Col md={4}>
           <Card className="profile-inner-card mb-3">
             <Card.Body>
-              {/* Pass the username along with email and birthday */}
               <UserInfo 
                 username={profileData.Username} 
                 email={profileData.Email} 

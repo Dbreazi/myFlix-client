@@ -4,10 +4,10 @@ import { Form, Button, Container } from 'react-bootstrap';
 
 const UpdateUser = ({ userData, onProfileUpdate }) => {
   const [formData, setFormData] = useState({
-    username: userData.username || '',
+    username: userData.Username || '',
     password: '',
-    email: userData.email || '',
-    birthday: userData.birthday ? userData.birthday.split('T')[0] : ''
+    email: userData.Email || '',
+    birthday: userData.Birthday ? userData.Birthday.split('T')[0] : ''
   });
 
   const handleInputChange = (event) => {
@@ -22,23 +22,27 @@ const UpdateUser = ({ userData, onProfileUpdate }) => {
       if (!token) return;
 
       const updatedData = {
-        username: formData.username,
-        ...(formData.password && { password: formData.password }),
-        email: formData.email,
-        birthday: formData.birthday
+        Username: formData.username,
+        ...(formData.password && { Password: formData.password }),
+        Email: formData.email,
+        Birthday: formData.birthday
       };
 
-      const response = await fetch(`/users/${userData.username}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedData)
-      });
+      const response = await fetch(
+        `https://strobeapp-583fefccfb94.herokuapp.com/users/${userData.Username}`,
+        {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedData)
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
 
       const data = await response.json();
@@ -53,7 +57,7 @@ const UpdateUser = ({ userData, onProfileUpdate }) => {
   return (
     <Container>
       <h4 className="text-left mb-4">Update Profile</h4>
-      <hr /> {/* Separator added here */}
+      <hr />
       <Form onSubmit={handleFormSubmit}>
         <Form.Group controlId="formUsername" className="mb-3">
           <Form.Label>Username</Form.Label>
@@ -109,9 +113,9 @@ const UpdateUser = ({ userData, onProfileUpdate }) => {
 
 UpdateUser.propTypes = {
   userData: PropTypes.shape({
-    username: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    birthday: PropTypes.string
+    Username: PropTypes.string.isRequired,
+    Email: PropTypes.string.isRequired,
+    Birthday: PropTypes.string
   }).isRequired,
   onProfileUpdate: PropTypes.func.isRequired
 };
