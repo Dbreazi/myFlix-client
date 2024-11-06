@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Form } from "react-bootstrap";
 import { MovieCard } from "../movie-card/MovieCard";
 import { MovieView } from "../movie-view/MovieView";
 import { LoginView } from "../login-view/LoginView";
@@ -13,6 +13,7 @@ export const MainView = () => {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")) || null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [movies, setMovies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Step 1: Add searchTerm state
 
   useEffect(() => {
     if (!token) return;
@@ -20,7 +21,10 @@ export const MainView = () => {
     fetch("https://strobeapp-583fefccfb94.herokuapp.com/movies", {
       headers: { Authorization: `Bearer ${token}` }
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch movies");
+        return response.json();
+      })
       .then((data) => setMovies(data))
       .catch((error) => console.error("Error fetching movies:", error));
   }, [token]);
@@ -36,11 +40,17 @@ export const MainView = () => {
       const updatedFavorites = isAdding
         ? [...prevUser.FavoriteMovies, movieId]
         : prevUser.FavoriteMovies.filter((id) => id !== movieId);
+
       const updatedUser = { ...prevUser, FavoriteMovies: updatedFavorites };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       return updatedUser;
     });
   };
+
+  // Step 2: Filter movies based on the search term
+  const filteredMovies = movies.filter((movie) =>
+    movie.Title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <BrowserRouter>
@@ -55,13 +65,23 @@ export const MainView = () => {
           <Route
             path="/"
             element={
-              user ? (
+              !user ? (
+                <Navigate to="/login" />
+              ) : (
                 <div className="main-view-container">
+                  {/* Step 3: Add search input */}
+                  <Form.Control
+                    type="text"
+                    placeholder="Search movies"
+                    className="mb-4"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
                   <Row>
-                    {movies.length === 0 ? (
-                      <div>The list is empty!</div>
+                    {filteredMovies.length === 0 ? (
+                      <div>No movies found!</div>
                     ) : (
-                      movies.map((movie) => (
+                      filteredMovies.map((movie) => (
                         <Col md={4} lg={3} key={movie._id} className="mb-4">
                           <MovieCard movie={movie} />
                         </Col>
@@ -69,39 +89,23 @@ export const MainView = () => {
                     )}
                   </Row>
                 </div>
-              ) : (
-                <Navigate to="/login" />
               )
             }
           />
           <Route
             path="/movies/:movieId"
-            element={
-              user ? (
-                <MovieView 
-                  movies={movies} 
-                  user={user} 
-                  token={token} 
-                  onFavoriteToggle={updateUserFavorites}
-                />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            element={!user ? <Navigate to="/login" /> : (
+              <MovieView 
+                movies={movies} 
+                user={user} 
+                token={token} 
+                onFavoriteToggle={updateUserFavorites}
+              />
+            )}
           />
           <Route
             path="/profile"
-            element={
-              user ? (
-                <ProfileView 
-                  user={user} 
-                  movies={movies} 
-                  onLoggedOut={handleLogout} 
-                />
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
+            element={!user ? <Navigate to="/login" /> : <ProfileView user={user} movies={movies} onLoggedOut={handleLogout} />}
           />
         </Routes>
       </Container>
